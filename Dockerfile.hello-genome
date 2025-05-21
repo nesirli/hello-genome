@@ -1,0 +1,26 @@
+########################################
+## -------- Stage 1 : builder -------- ##
+########################################
+FROM ubuntu:22.04 AS builder
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+        build-essential git curl ca-certificates \
+        libssl-dev zlib1g-dev libbz2-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /kent
+RUN git clone --depth 1 https://github.com/ucscGenomeBrowser/kent.git .
+RUN make -C src/lib && make -C src/utils/faSize
+
+########################################
+## -------- Stage 2 : runner -------- ##
+########################################
+FROM busybox:uclibc
+
+COPY --from=builder /kent/bin/faSize /usr/local/bin/faSize
+
+WORKDIR /data
+ENTRYPOINT ["faSize"]
+CMD ["--help"]
