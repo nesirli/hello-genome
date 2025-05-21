@@ -4,7 +4,7 @@
 
 `hello-genome` packages the UCSC **faSize** utility so you can sanity‑check any FASTA file—on a laptop, in CI, or on an HPC cluster—*without* installing the 800 MB Kent source tree.
 
-[![Build & Push](https://github.com/<USERNAME>/hello-genome/actions/workflows/docker.yml/badge.svg)](https://github.com/<USERNAME>/hello-genome/actions/workflows/docker.yml)
+[![Build & Push](https://github.com/nesirli/hello-genome/actions/workflows/docker.yml/badge.svg)](https://github.com/nesirli/hello-genome/actions/workflows/docker.yml)
 
 ---
 
@@ -37,7 +37,7 @@ Because the tool is wrapped in a minimal container (BusyBox + one binary) it **s
 
 ```bash
 # Build locally
-git clone https://github.com/<USERNAME>/hello-genome.git
+git clone https://github.com/nesirli/hello-genome.git
 cd hello-genome
 docker build -f Dockerfile.hello-genome -t hello-genome .
 
@@ -60,7 +60,7 @@ total     3,094,753,649   3.2  40.9  9,421 gaps
 
 ```bash
 # Convert once (workstation or login node)
-apptainer pull hello-genome.sif docker://ghcr.io/<USERNAME>/hello-genome:latest
+apptainer pull hello-genome.sif docker://ghcr.io/nesirli/hello-genome:latest
 
 # Copy genome to shared storage, then submit
 sbatch slurm/hello-genome.slurm
@@ -72,7 +72,7 @@ The provided Slurm script requests 4 CPUs for 10 minutes and saves output to `
 
 ## 🤖 CI / CD
 
-* **Push → Build:** every commit to `main` rebuilds and pushes `ghcr.io/<USERNAME>/hello-genome:latest`.
+* **Push → Build:** every commit to `main` rebuilds and pushes `ghcr.io/nesirli/hello-genome:latest`.
 * **Weekly cron:** Sunday 02:00 UTC job refreshes against the latest UCSC source.
 * **Badges:** green = image current; red = investigate.
 
