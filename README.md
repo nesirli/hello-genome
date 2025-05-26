@@ -32,8 +32,6 @@ cd hello-genome
 docker build -t hello-genome .
 ```
 
-> **Note**: The included `Makefile` is a placeholder and not required for `faSize` itself.
-
 ---
 
 ## Usage
