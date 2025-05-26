@@ -1,0 +1,54 @@
+# -----------------------------------------------------------------------------
+#  Core project ignores
+# -----------------------------------------------------------------------------
+# SLURM & job-array logs
+logs/
+*.out
+*.err
+*.log
+
+# Generated QC / alignment artefacts
+*.qc
+*.bam
+*.bam.bai
+*.sam
+
+# Singularity / Apptainer container images
+*.sif
+*.img
+
+# Large genome or sample data (downloaded or test-only)
+*.fa
+*.fasta
+*.fna
+*.fastq*
+*.fq*
+
+# Temporary scratch files
+*.tmp
+*.temp
+*.swp
+*~
+.#*
+
+# -----------------------------------------------------------------------------
+#  Development / editor cruft
+# -----------------------------------------------------------------------------
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+
+# -----------------------------------------------------------------------------
+#  GitHub Actions runtime artefacts
+# -----------------------------------------------------------------------------
+# (workflow logs are stored in the Actions UI, not the repo)
+*.coverage
+*.testlog
+
+# -----------------------------------------------------------------------------
+#  Environment / secrets (if you ever add them locally)
+# -----------------------------------------------------------------------------
+.env
+*.secret
