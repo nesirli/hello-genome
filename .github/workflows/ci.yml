@@ -29,7 +29,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: 🔐 Log in to GHCR
-        uses: docker/login-action@v3       # <== correct version
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
