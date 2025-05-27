@@ -58,7 +58,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - name: ✅ Smoke-test image
         run: |
-          docker pull ${{ steps.meta.outputs.version }}
+          IMAGE=ghcr.io/${{ github.repository }}:${{ steps.meta.outputs.version }}
+          docker pull "$IMAGE"
           echo "faSize on test.fa.gz"
           echo -e ">t\nACTG" | gzip -c > /tmp/mini.fa.gz
-          docker run --rm -i ${{ steps.meta.outputs.version }} -detailed /dev/stdin < /tmp/mini.fa.gz
+          docker run --rm -i "$IMAGE" -detailed /dev/stdin < /tmp/mini.fa.gz
