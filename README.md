@@ -10,7 +10,7 @@
 
 ## Purpose
 
-Genome analysis pipelines can burn hours of compute time; a corrupted or mislabeled FASTA file wastes it all. `hello-genome` provides a lightning‑fast pre‑flight check that reports metrics such as sequence count, total length, longest/shortest record, and GC content.
+Genome analysis pipelines can burn hours of compute time; a corrupted or mislabeled FASTA file wastes it all. `hello-genome` provides a lightning‑fast pre‑flight check that reports metrics such as sequence count, total length, longest/shortest record, and N-content.
 
 ---
 
@@ -46,9 +46,9 @@ docker run --rm -v "$PWD":/data hello-genome /data/your_sequences.fasta
 
 ### faSize Flags
 
-* `-detailed`           Output name and size for each record only. ([hgdownload.soe.ucsc.edu](https://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/?utm_source=chatgpt.com))
-* `-tab`                Emit tab-separated statistics. ([hgdownload.soe.ucsc.edu](https://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/?utm_source=chatgpt.com))
-* `-veryDetailed`       Show name, size, #Ns, #real, #upper, #lower per record. ([hgdownload.soe.ucsc.edu](https://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/?utm_source=chatgpt.com))
+* `-detailed`     Output name and size for each record only.
+* `-tab`          Emit tab-separated summary.
+* `-veryDetailed` Show name, size, #Ns, #real, #upper, #lower per record.
 
 **Example: Detailed record sizes**
 
@@ -60,9 +60,50 @@ docker run --rm -v "$PWD":/data hello-genome \
 
 ---
 
-## HPC Integration (Slurm)
+## HPC Integration (Singularity / Apptainer + Slurm)
 
-An example Slurm batch script is provided at `slurm/hello-genome.slurm`:
+`hello-genome` also runs seamlessly on multi‑user clusters via Singularity (Apptainer).
+
+### Prepare your FASTA
+
+```bash
+# Transfer and uncompress on the cluster
+scp file.fasta.gz user@cluster:~/test/
+cd ~/test
+gunzip -c file.fasta.gz > file.fasta
+```
+
+### Pull & convert container
+
+```bash
+# On the login node (no Docker required)
+apptainer pull hello-genome.sif \
+    docker://ghcr.io/nesirli/hello-genome:latest
+```
+
+### Run interactively
+
+```bash
+apptainer run --bind $PWD:/data hello-genome.sif /data/file.fasta
+```
+
+### Slurm batch example
+
+Save as `slurm/hello-genome.slurm`:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=fasize
+#SBATCH --output=fasize_%j.out
+#SBATCH --mem=1G
+#SBATCH --time=00:05:00
+
+# Bind current dir into container
+apptainer run --bind $PWD:/data $HOME/hello-genome.sif \
+    /data/SRR30970561.fasta
+```
+
+Submit with:
 
 ```bash
 sbatch slurm/hello-genome.slurm
@@ -72,23 +113,18 @@ sbatch slurm/hello-genome.slurm
 
 ## Continuous Integration
 
-This repository includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that builds and pushes the image nightly and on every `main` branch update, then runs a smoke test:
-
-* Builds for `linux/amd64` and `linux/arm64`
-* Pushes to GHCR
-* Pulls the image and runs `faSize --help` to verify
+This repository includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that builds and pushes multi‑arch images nightly and on every `main` update, then runs a smoke test against the published container.
 
 ---
 
 ## Repository Contents
 
 ```text
-├── Dockerfile                 # Two‑stage build (UCSC image → Ubuntu runtime)
+├── Dockerfile                 # Direct-download image for faSize
 ├── slurm/hello-genome.slurm   # Example Slurm script
 ├── .github/workflows/ci.yml   # CI pipeline for build & push
 ├── LICENSE                    # MIT License for this repo; faSize under UCSC license
-├── README.md                  # This document
-└── notes.md                   # Extended usage & troubleshooting notes
+└── README.md                  # This document
 ```
 
 ---
