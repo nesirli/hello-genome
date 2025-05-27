@@ -56,11 +56,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
       - name: ✅ Smoke-test image
         run: |
-          for i in 1 2 3; do
-            docker pull ${{ steps.meta.outputs.version }} && break || sleep 10
-          done
-          echo "Running: faSize --help"
-          docker run --rm ${{ steps.meta.outputs.version }} --help | head -n 5
+          docker pull ${{ steps.meta.outputs.version }}
+          echo "faSize on test.fa.gz"
+          echo -e ">t\nACTG" | gzip -c > /tmp/mini.fa.gz
+          docker run --rm -i ${{ steps.meta.outputs.version }} -detailed /dev/stdin < /tmp/mini.fa.gz
