@@ -6,13 +6,12 @@ on:
   pull_request: {}
   workflow_dispatch: {}
   schedule:
-    # Nightly build at 02:23 UTC
-    - cron: '23 2 * * *'
+    # Weekly build every Sunday at 02:23 UTC
+    - cron: '23 2 * * 0'
 
 permissions:
-  contents: read      # for actions/checkout
-  packages: write     # to push to GHCR
-  id-token: write     # for OIDC login
+  contents: read    # for checkout
+  packages: write   # to push to GHCR
 
 jobs:
   build-and-push:
@@ -60,7 +59,6 @@ jobs:
 
       - name: ✅ Smoke-test image
         run: |
-          # Poll & pull the newly pushed image (retry x3)
           for i in 1 2 3; do
             docker pull ${{ steps.meta.outputs.version }} && break || sleep 10
           done
